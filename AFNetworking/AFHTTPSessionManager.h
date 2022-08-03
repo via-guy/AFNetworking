@@ -143,6 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see -dataTaskWithRequest:uploadProgress:downloadProgress:completionHandler:
  */
 - (nullable NSURLSessionDataTask *)GET:(NSString *)URLString
+                   isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                             parameters:(nullable id)parameters
                                headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                               progress:(nullable void (^)(NSProgress *downloadProgress))downloadProgress
@@ -161,6 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see -dataTaskWithRequest:completionHandler:
  */
 - (nullable NSURLSessionDataTask *)HEAD:(NSString *)URLString
+                    isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                              parameters:(nullable id)parameters
                                 headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                 success:(nullable void (^)(NSURLSessionDataTask *task))success
@@ -179,6 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see -dataTaskWithRequest:uploadProgress:downloadProgress:completionHandler:
  */
 - (nullable NSURLSessionDataTask *)POST:(NSString *)URLString
+                    isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                              parameters:(nullable id)parameters
                                 headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
@@ -218,6 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see -dataTaskWithRequest:completionHandler:
  */
 - (nullable NSURLSessionDataTask *)PUT:(NSString *)URLString
+                   isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                             parameters:(nullable id)parameters
                                headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
@@ -235,6 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see -dataTaskWithRequest:completionHandler:
  */
 - (nullable NSURLSessionDataTask *)PATCH:(NSString *)URLString
+                     isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                               parameters:(nullable id)parameters
                                  headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                  success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
@@ -252,6 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see -dataTaskWithRequest:completionHandler:
  */
 - (nullable NSURLSessionDataTask *)DELETE:(NSString *)URLString
+                      isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                                parameters:(nullable id)parameters
                                   headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                   success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
@@ -273,6 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
                                                 URLString:(NSString *)URLString
+                                      isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                                                parameters:(nullable id)parameters
                                                   headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                            uploadProgress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress

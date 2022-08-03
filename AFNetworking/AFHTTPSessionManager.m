@@ -118,6 +118,7 @@
 #pragma mark -
 
 - (NSURLSessionDataTask *)GET:(NSString *)URLString
+          isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                    parameters:(nullable id)parameters
                       headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                      progress:(nullable void (^)(NSProgress * _Nonnull))downloadProgress
@@ -127,6 +128,7 @@
     
     NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"GET"
                                                         URLString:URLString
+                                              isRelativeToBaseUrl:isRelativeToBaseUrl
                                                        parameters:parameters
                                                           headers:headers
                                                    uploadProgress:nil
@@ -140,12 +142,13 @@
 }
 
 - (NSURLSessionDataTask *)HEAD:(NSString *)URLString
+           isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                     parameters:(nullable id)parameters
                        headers:(nullable NSDictionary<NSString *,NSString *> *)headers
                        success:(nullable void (^)(NSURLSessionDataTask * _Nonnull))success
                        failure:(nullable void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
 {
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:^(NSURLSessionDataTask *task, __unused id responseObject) {
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString isRelativeToBaseUrl:isRelativeToBaseUrl parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:^(NSURLSessionDataTask *task, __unused id responseObject) {
         if (success) {
             success(task);
         }
@@ -157,13 +160,14 @@
 }
 
 - (nullable NSURLSessionDataTask *)POST:(NSString *)URLString
+                    isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                              parameters:(nullable id)parameters
                                 headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
                                 success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
                                 failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure
 {
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"POST" URLString:URLString parameters:parameters headers:headers uploadProgress:uploadProgress downloadProgress:nil success:success failure:failure];
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"POST" URLString:URLString isRelativeToBaseUrl:isRelativeToBaseUrl parameters:parameters headers:headers uploadProgress:uploadProgress downloadProgress:nil success:success failure:failure];
     
     [dataTask resume];
     
@@ -210,12 +214,13 @@
 }
 
 - (NSURLSessionDataTask *)PUT:(NSString *)URLString
+          isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                    parameters:(nullable id)parameters
                       headers:(nullable NSDictionary<NSString *,NSString *> *)headers
                       success:(nullable void (^)(NSURLSessionDataTask *task, id responseObject))success
                       failure:(nullable void (^)(NSURLSessionDataTask *task, NSError *error))failure
 {
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"PUT" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"PUT" URLString:URLString isRelativeToBaseUrl:isRelativeToBaseUrl parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
     
     [dataTask resume];
     
@@ -223,12 +228,13 @@
 }
 
 - (NSURLSessionDataTask *)PATCH:(NSString *)URLString
+            isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                      parameters:(nullable id)parameters
                         headers:(nullable NSDictionary<NSString *,NSString *> *)headers
                         success:(nullable void (^)(NSURLSessionDataTask *task, id responseObject))success
                         failure:(nullable void (^)(NSURLSessionDataTask *task, NSError *error))failure
 {
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"PATCH" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"PATCH" URLString:URLString isRelativeToBaseUrl:isRelativeToBaseUrl parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
     
     [dataTask resume];
     
@@ -236,12 +242,13 @@
 }
 
 - (NSURLSessionDataTask *)DELETE:(NSString *)URLString
+             isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                       parameters:(nullable id)parameters
                          headers:(nullable NSDictionary<NSString *,NSString *> *)headers
                          success:(nullable void (^)(NSURLSessionDataTask *task, id responseObject))success
                          failure:(nullable void (^)(NSURLSessionDataTask *task, NSError *error))failure
 {
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"DELETE" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"DELETE" URLString:URLString isRelativeToBaseUrl:isRelativeToBaseUrl parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
     
     [dataTask resume];
     
@@ -251,6 +258,7 @@
 
 - (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
                                        URLString:(NSString *)URLString
+                             isRelativeToBaseUrl:(BOOL)isRelativeToBaseUrl
                                       parameters:(nullable id)parameters
                                          headers:(nullable NSDictionary <NSString *, NSString *> *)headers
                                   uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgress
@@ -259,7 +267,13 @@
                                          failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure
 {
     NSError *serializationError = nil;
-    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
+    NSString *finalURLString;
+    if (isRelativeToBaseUrl) {
+        finalURLString = [[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString];
+    } else {
+        finalURLString = URLString;
+    }
+    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:finalURLString parameters:parameters error:&serializationError];
     for (NSString *headerField in headers.keyEnumerator) {
         [request setValue:headers[headerField] forHTTPHeaderField:headerField];
     }
